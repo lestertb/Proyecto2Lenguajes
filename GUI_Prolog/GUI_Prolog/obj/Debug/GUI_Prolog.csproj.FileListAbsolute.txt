@@ -1,0 +1,11 @@
+C:\Users\Lester Trejos\Documents\RepoProyecto2Lenguajes\proyecto2lenguajes\GUI_Prolog\GUI_Prolog\bin\Debug\GUI_Prolog.exe.config
+C:\Users\Lester Trejos\Documents\RepoProyecto2Lenguajes\proyecto2lenguajes\GUI_Prolog\GUI_Prolog\bin\Debug\GUI_Prolog.exe
+C:\Users\Lester Trejos\Documents\RepoProyecto2Lenguajes\proyecto2lenguajes\GUI_Prolog\GUI_Prolog\bin\Debug\GUI_Prolog.pdb
+C:\Users\Lester Trejos\Documents\RepoProyecto2Lenguajes\proyecto2lenguajes\GUI_Prolog\GUI_Prolog\obj\Debug\GUI_Prolog.csprojAssemblyReference.cache
+C:\Users\Lester Trejos\Documents\RepoProyecto2Lenguajes\proyecto2lenguajes\GUI_Prolog\GUI_Prolog\obj\Debug\GUI_Prolog.Properties.Resources.resources
+C:\Users\Lester Trejos\Documents\RepoProyecto2Lenguajes\proyecto2lenguajes\GUI_Prolog\GUI_Prolog\obj\Debug\GUI_Prolog.csproj.GenerateResource.cache
+C:\Users\Lester Trejos\Documents\RepoProyecto2Lenguajes\proyecto2lenguajes\GUI_Prolog\GUI_Prolog\obj\Debug\GUI_Prolog.csproj.CoreCompileInputs.cache
+C:\Users\Lester Trejos\Documents\RepoProyecto2Lenguajes\proyecto2lenguajes\GUI_Prolog\GUI_Prolog\obj\Debug\GUI_Prolog.exe
+C:\Users\Lester Trejos\Documents\RepoProyecto2Lenguajes\proyecto2lenguajes\GUI_Prolog\GUI_Prolog\obj\Debug\GUI_Prolog.pdb
+C:\Users\Lester Trejos\Documents\RepoProyecto2Lenguajes\proyecto2lenguajes\GUI_Prolog\GUI_Prolog\obj\Debug\GUI_Prolog.Form1.resources
+C:\Users\Lester Trejos\Documents\RepoProyecto2Lenguajes\proyecto2lenguajes\GUI_Prolog\GUI_Prolog\obj\Debug\GUI_Prolog.csproj.CopyComplete
