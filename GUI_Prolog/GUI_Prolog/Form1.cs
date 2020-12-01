@@ -15,28 +15,16 @@ namespace GUI_Prolog
     public partial class Form1 : Form
     {
         //Globals
+        int tamannoMatriz = 0;
         int cambiosMatriz = 0;
+
         public Form1()
         {
             InitializeComponent();
             checkBox1.Visible = false;
             button4.Enabled = false;
             linkLabel1.Visible = false;
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            /*
-            string nombre = textBox1.Text;
-            listBox1.Items.Clear();
-            PlQuery cargar = new PlQuery("cargar('codigo.bd')");
-            cargar.NextSolution();
-
-            PlQuery testConsulta = new PlQuery("abuelo(X,"+ nombre +")");
-            foreach (PlQueryVariables x in testConsulta.SolutionVariables)
-                listBox1.Items.Add(x["X"].ToString());
-            cargar.Dispose();
-            */
+            linkLabel2.Visible = false;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -48,7 +36,7 @@ namespace GUI_Prolog
 
         private void button2_Click(object sender, EventArgs e)
         {
-            int tamannoMatriz = 0;
+            checkBox1.Checked = false;
             if (Int32.TryParse(textBox1.Text, out tamannoMatriz))
             {
                 crearMatriz(tamannoMatriz, 1);
@@ -65,12 +53,13 @@ namespace GUI_Prolog
 
         private void button3_Click(object sender, EventArgs e)
         {
-            int tamannoMatriz = 0;
+            dataGridView1.Enabled = true;
             if (Int32.TryParse(textBox1.Text, out tamannoMatriz))
             {
                 checkBox1.Visible = false;
                 crearMatriz(tamannoMatriz, 2);
                 button4.Enabled = true;
+                linkLabel2.Visible = true;
             }
             else
             {
@@ -130,8 +119,6 @@ namespace GUI_Prolog
                 }
                 else
                 {
-                    
-                    //PlQuery.PlCall("assert(ordenado('" + p1 + "-" + p2 + "')).");
                     dataGridView1.Rows[p1].Cells[p2].Value = "X";
                     
                 }
@@ -148,7 +135,7 @@ namespace GUI_Prolog
             if (checkBox1.Checked)
             {
                 dataGridView1.ClearSelection();
-                dataGridView1.Enabled = false;
+                cambiosMatriz = 1;
                 button4.Enabled = true;
             }
             else
@@ -160,7 +147,10 @@ namespace GUI_Prolog
 
         private void button4_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Falta");
+            textBox1.Enabled = false;
+            button2.Enabled = false;
+            button3.Enabled = false;
+            recorrerDataGrid();
         }
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -168,26 +158,100 @@ namespace GUI_Prolog
             MessageBox.Show("1) Seleccione con el click izquierdo la casilla que desea llenar" +
             "\n2) Use el click derecho sobre una casilla para borrar su contenido" +
             "\n3) Al finalizar seleccione el comboBox en la parte inferior de la " +
-            "matriz para cargar los datos de la matriz");
+            "matriz para cargar los datos de la matriz" +
+            "\n4) Si ya pulsó el botón Cargar Datos, para reiniciar presione Limpiar Data "
+            ,"Consejo");
         }
 
         private void dataGridView1_MouseDown(object sender, MouseEventArgs e)
         {
-            if (cambiosMatriz == 0)
+            try
             {
-                if (e.Button == MouseButtons.Right)
+                if (cambiosMatriz == 0)
                 {
-                    var hit = dataGridView1.HitTest(e.X, e.Y);
-                    dataGridView1.ClearSelection();
-                    dataGridView1[hit.ColumnIndex, hit.RowIndex].Value = "";
-                }
-                if (e.Button == MouseButtons.Left)
-                {
-                    var hit = dataGridView1.HitTest(e.X, e.Y);
-                    dataGridView1.ClearSelection();
-                    dataGridView1[hit.ColumnIndex, hit.RowIndex].Value = "X";
+                    if (e.Button == MouseButtons.Right)
+                    {
+                        var hit = dataGridView1.HitTest(e.X, e.Y);
+                        dataGridView1.ClearSelection();
+                        dataGridView1[hit.ColumnIndex, hit.RowIndex].Value = "";
+                    }
+                    if (e.Button == MouseButtons.Left)
+                    {
+                        var hit = dataGridView1.HitTest(e.X, e.Y);
+                        dataGridView1.ClearSelection();
+                        dataGridView1[hit.ColumnIndex, hit.RowIndex].Value = "X";
+                    }
                 }
             }
+            catch (ArgumentOutOfRangeException outOfRange)
+            {
+                MessageBox.Show("De click dentro de la matriz", "Fuera de rango", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        void recorrerDataGrid() {
+            bool tiene = false;
+            for (int i = 0; i < tamannoMatriz; i++)
+            {
+                for (int j = 0; j < tamannoMatriz; j++)
+                {
+                    if ((string)dataGridView1.Rows[i].Cells[j].Value == "X")
+                    {
+                        tiene = true;
+                        string codData = "pares(" + i + "," + j + ")";
+                        llenarDataProlog(codData);
+                    }
+                }
+            }
+            if (tiene)
+            {
+                imprimirData();
+            }
+            else
+            {
+                MessageBox.Show("Matriz Vacía", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+
+        }
+
+        void llenarDataProlog(string codData) {
+
+            PlQuery.PlCall("assert(" + codData + ")");
+
+        }
+
+        void imprimirData() {
+            using (var q1 = new PlQuery("pares(X, Y), atomic_list_concat([X,',',Y], L)"))
+            {
+                foreach (PlQueryVariables x in q1.SolutionVariables)
+                    listBox1.Items.Add(x["L"].ToString());
+            }
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            PlEngine.PlCleanup();
+            Environment.SetEnvironmentVariable("Path", @"C:\\Program Files (x86)\\swipl\\bin");
+            string[] p = { "-q", "-f", @"codigo.pl" };
+            PlEngine.Initialize(p);
+            dataGridView1.Rows.Clear();
+            dataGridView1.Columns.Clear();
+            checkBox1.Checked = false;
+            checkBox1.Visible = false;
+            button4.Enabled = false;
+            linkLabel1.Visible = false;
+            linkLabel2.Visible = false;
+            listBox1.Items.Clear();
+            textBox1.Enabled = true;
+            button2.Enabled = true;
+            button3.Enabled = true;
+        }
+
+        private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            MessageBox.Show("1) Si ya pulsó el botón Cargar Datos, para reiniciar" +
+                " presione Limpiar Data ", "Consejo");
 
         }
     }

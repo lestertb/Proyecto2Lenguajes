@@ -1,23 +1,8 @@
-/** Base persona*/
-persona(lester).
-persona(juan).
-persona(pedro).
+/** Base de conocimiento*/
 
-/** Base progenitor, para ejercicio de árbol familiar*/
+:- dynamic pares/2.
 
-progenitor(clara,pedro).
-progenitor(pedro,jose).
-progenitor(ana,clara).
-progenitor(jose,clara).
-
-
-cargar(A):-exists_file(A),consult(A).
-
-/**Es par*/
-es_par(X):- 0 is X mod 2.
-
-/**Otras*/
-abuelo(X,Y):- progenitor(X,Z) , progenitor(Z,Y).
-
-bisabuelo(X,Y):- progenitor(X,Z), abuelo(Z,Y).
-
+fact(N,F) :- N>0,
+               Nmenos1 is N-1,
+               fact(Nmenos1,F1),
+               F is N*F1.
