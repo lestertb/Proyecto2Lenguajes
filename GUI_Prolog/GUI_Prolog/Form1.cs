@@ -101,25 +101,22 @@ namespace GUI_Prolog
                 dataGridView1.ClearSelection();
                 button4.Enabled = true;
             }
-        
-
-            //dataGridView1[1, 1].Value = "hola";
         }
 
         void llenarAutomatico(int tamannoMatriz) {
-            Random r = new Random();
-            int val = r.Next(0, (tamannoMatriz * tamannoMatriz));
+            Random rand = new Random();
+            int val = rand.Next(0, (tamannoMatriz * tamannoMatriz));
             for (int i = 0; i <= val; i++)
             {
-                int p1 = r.Next(0, tamannoMatriz);
-                int p2 = r.Next(0, tamannoMatriz);
-                if ((string)dataGridView1.Rows[p1].Cells[p2].Value == "X")
+                int val1 = rand.Next(0, tamannoMatriz);
+                int val2 = rand.Next(0, tamannoMatriz);
+                if ((string)dataGridView1.Rows[val1].Cells[val2].Value == "X")
                 {
-                    dataGridView1.Rows[p1].Cells[p2].Value = "X";
+                    dataGridView1.Rows[val1].Cells[val2].Value = "X";
                 }
                 else
                 {
-                    dataGridView1.Rows[p1].Cells[p2].Value = "X";
+                    dataGridView1.Rows[val1].Cells[val2].Value = "X";
                     
                 }
             }
@@ -150,7 +147,10 @@ namespace GUI_Prolog
             textBox1.Enabled = false;
             button2.Enabled = false;
             button3.Enabled = false;
+            checkBox1.Enabled = false;
             recorrerDataGrid();
+            button4.Enabled = false;
+            
         }
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -160,7 +160,8 @@ namespace GUI_Prolog
             "\n3) Al finalizar seleccione el comboBox en la parte inferior de la " +
             "matriz para cargar los datos de la matriz" +
             "\n4) Si ya pulsó el botón Cargar Datos, para reiniciar presione Limpiar Data "
-            ,"Consejo");
+            ,"Consejo" +
+            "\n5) Si intentó cargar datos con la matriz vacía debe quitar el check de matriz lista");
         }
 
         private void dataGridView1_MouseDown(object sender, MouseEventArgs e)
@@ -210,6 +211,7 @@ namespace GUI_Prolog
             else
             {
                 MessageBox.Show("Matriz Vacía", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                checkBox1.Enabled = true;
             }
 
         }
@@ -250,6 +252,7 @@ namespace GUI_Prolog
             textBox1.Enabled = true;
             button2.Enabled = true;
             button3.Enabled = true;
+            checkBox1.Enabled = true;
         }
 
         private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
