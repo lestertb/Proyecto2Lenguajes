@@ -43,12 +43,14 @@ namespace GUI_Prolog
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.button1 = new System.Windows.Forms.Button();
             this.linkLabel2 = new System.Windows.Forms.LinkLabel();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(24, 229);
+            this.button2.Location = new System.Drawing.Point(24, 116);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(100, 40);
             this.button2.TabIndex = 1;
@@ -59,16 +61,16 @@ namespace GUI_Prolog
             // dataGridView1
             // 
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(348, 75);
+            this.dataGridView1.Location = new System.Drawing.Point(283, 35);
             this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(472, 332);
+            this.dataGridView1.Size = new System.Drawing.Size(589, 292);
             this.dataGridView1.TabIndex = 2;
             this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
             this.dataGridView1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dataGridView1_MouseDown);
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(24, 153);
+            this.textBox1.Location = new System.Drawing.Point(24, 51);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(100, 20);
             this.textBox1.TabIndex = 3;
@@ -76,7 +78,7 @@ namespace GUI_Prolog
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(21, 123);
+            this.label1.Location = new System.Drawing.Point(21, 35);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(103, 13);
             this.label1.TabIndex = 4;
@@ -85,7 +87,7 @@ namespace GUI_Prolog
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(21, 203);
+            this.label2.Location = new System.Drawing.Point(21, 91);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(112, 13);
             this.label2.TabIndex = 5;
@@ -94,7 +96,7 @@ namespace GUI_Prolog
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(21, 296);
+            this.label3.Location = new System.Drawing.Point(21, 173);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(70, 13);
             this.label3.TabIndex = 6;
@@ -102,7 +104,7 @@ namespace GUI_Prolog
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(24, 325);
+            this.button3.Location = new System.Drawing.Point(24, 198);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(87, 37);
             this.button3.TabIndex = 7;
@@ -113,7 +115,7 @@ namespace GUI_Prolog
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(348, 424);
+            this.checkBox1.Location = new System.Drawing.Point(283, 347);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(79, 17);
             this.checkBox1.TabIndex = 8;
@@ -123,9 +125,9 @@ namespace GUI_Prolog
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(348, 465);
+            this.button4.Location = new System.Drawing.Point(283, 387);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(92, 29);
+            this.button4.Size = new System.Drawing.Size(79, 29);
             this.button4.TabIndex = 9;
             this.button4.Text = "Cargar Datos";
             this.button4.UseVisualStyleBackColor = true;
@@ -134,7 +136,7 @@ namespace GUI_Prolog
             // linkLabel1
             // 
             this.linkLabel1.AutoSize = true;
-            this.linkLabel1.Location = new System.Drawing.Point(757, 424);
+            this.linkLabel1.Location = new System.Drawing.Point(809, 347);
             this.linkLabel1.Name = "linkLabel1";
             this.linkLabel1.Size = new System.Drawing.Size(63, 13);
             this.linkLabel1.TabIndex = 10;
@@ -145,14 +147,14 @@ namespace GUI_Prolog
             // listBox1
             // 
             this.listBox1.FormattingEnabled = true;
-            this.listBox1.Location = new System.Drawing.Point(534, 424);
+            this.listBox1.Location = new System.Drawing.Point(411, 347);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(185, 147);
+            this.listBox1.Size = new System.Drawing.Size(204, 199);
             this.listBox1.TabIndex = 11;
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(24, 474);
+            this.button1.Location = new System.Drawing.Point(24, 289);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(87, 38);
             this.button1.TabIndex = 12;
@@ -163,7 +165,7 @@ namespace GUI_Prolog
             // linkLabel2
             // 
             this.linkLabel2.AutoSize = true;
-            this.linkLabel2.Location = new System.Drawing.Point(757, 424);
+            this.linkLabel2.Location = new System.Drawing.Point(809, 347);
             this.linkLabel2.Name = "linkLabel2";
             this.linkLabel2.Size = new System.Drawing.Size(63, 13);
             this.linkLabel2.TabIndex = 13;
@@ -171,11 +173,31 @@ namespace GUI_Prolog
             this.linkLabel2.Text = "Ver consejo";
             this.linkLabel2.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel2_LinkClicked);
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(21, 261);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(48, 13);
+            this.label4.TabIndex = 14;
+            this.label4.Text = "Reiniciar";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(280, 9);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(35, 13);
+            this.label5.TabIndex = 15;
+            this.label5.Text = "Matriz";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(909, 588);
+            this.ClientSize = new System.Drawing.Size(912, 551);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.linkLabel2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.listBox1);
@@ -213,6 +235,8 @@ namespace GUI_Prolog
         private System.Windows.Forms.ListBox listBox1;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.LinkLabel linkLabel2;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label5;
     }
 }
 

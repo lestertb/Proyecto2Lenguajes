@@ -229,6 +229,10 @@ namespace GUI_Prolog
 
         }
 
+        void imprimirGrupos() { 
+            
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
             PlEngine.PlCleanup();
