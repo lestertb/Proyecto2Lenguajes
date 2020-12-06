@@ -25,6 +25,7 @@ namespace GUI_Prolog
             button4.Enabled = false;
             linkLabel1.Visible = false;
             linkLabel2.Visible = false;
+            listBox1.HorizontalScrollbar = true;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -117,14 +118,8 @@ namespace GUI_Prolog
                 else
                 {
                     dataGridView1.Rows[val1].Cells[val2].Value = "X";
-                    
                 }
             }
-        }
-
-        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-        
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
@@ -137,6 +132,7 @@ namespace GUI_Prolog
             }
             else
             {
+                cambiosMatriz = 0;
                 dataGridView1.Enabled = true;
                 button4.Enabled = false;
             }
@@ -144,6 +140,8 @@ namespace GUI_Prolog
 
         private void button4_Click(object sender, EventArgs e)
         {
+
+            PlQuery.PlCall("assert(matrixSize(" + tamannoMatriz + "))");
             textBox1.Enabled = false;
             button2.Enabled = false;
             button3.Enabled = false;
@@ -199,14 +197,14 @@ namespace GUI_Prolog
                     if ((string)dataGridView1.Rows[i].Cells[j].Value == "X")
                     {
                         tiene = true;
-                        string codData = "pares(" + i + "," + j + ")";
+                        string codData = "pares(" + i + "," + j + "," + "0" + ")";
                         llenarDataProlog(codData);
                     }
                 }
             }
             if (tiene)
             {
-                imprimirData();
+                MessageBox.Show("Se cargó los datos exitosamente", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
@@ -220,19 +218,6 @@ namespace GUI_Prolog
 
             PlQuery.PlCall("assert(" + codData + ")");
 
-        }
-
-        void imprimirData() {
-            using (var q1 = new PlQuery("pares(X, Y), atomic_list_concat([X,',',Y], L)"))
-            {
-                foreach (PlQueryVariables x in q1.SolutionVariables)
-                    listBox1.Items.Add(x["L"].ToString());
-            }
-
-        }
-
-        void imprimirGrupos() { 
-            
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -261,5 +246,49 @@ namespace GUI_Prolog
                 " presione Limpiar Data ", "Consejo");
 
         }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            imprimirGrupos();
+        }
+
+        void imprimirGrupos()
+        {
+            List<string> auxList = new List<string>();
+            int test = 0;
+            int cantGrupos = 0;
+            PlQuery.PlCall("ejecutar");
+            using (var q1 = new PlQuery("grupos(X,Y)"))
+            {
+                foreach (PlQueryVariables x in q1.SolutionVariables)
+                {
+                    foreach (var i in auxList)
+                    {
+                        if (i.Contains(x["X"].ToString()))
+                            test = 1;
+                        else
+                            test = 0;
+                    }
+                    if (test == 0)
+                    {
+                        cantGrupos++;
+                        auxList.Add(x["X"].ToString());
+                        listBox1.Items.Add("Grupo#" + cantGrupos.ToString() + ": " + x["X"].ToString());
+                        listBox1.Items.Add("Cantidad de puntos:" + x["Y"].ToString());
+                        listBox1.Items.Add("\n");
+                    }
+                }
+            }
+            pintarGrupos(auxList);
+
+        }
+
+        void pintarGrupos(List<string> grupos) {
+            foreach (var x in grupos)
+            {
+                MessageBox.Show(x);
+            }
+        }
+
     }
 }
