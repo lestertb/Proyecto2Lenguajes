@@ -255,38 +255,16 @@ namespace GUI_Prolog
         void imprimirGrupos()
         {
             List<string> auxList = new List<string>();
-            int test = 0;
             int cantGrupos = 0;
-            PlQuery.PlCall("ejecutar");
-            /*
-            using (var q1 = new PlQuery("grupos(X,Y)"))
-            {
-                foreach (PlQueryVariables x in q1.SolutionVariables)
-                {
-                    foreach (var i in auxList)
-                    {
-                        if (i.Contains(x["X"].ToString()))
-                            test = 1;
-                        else
-                            test = 0;
-                    }
-                    if (test == 0)
-                    {
-                        cantGrupos++;
-                        auxList.Add(x["X"].ToString());
-                        listBox1.Items.Add("Grupo#" + cantGrupos.ToString() + ": " + x["X"].ToString());
-                        listBox1.Items.Add("Cantidad de puntos:" + x["Y"].ToString());
-                        listBox1.Items.Add("\n");
-                    }
-                }
-            }*/
-            using (var q1 = new PlQuery("grupos(X,Y)"))
+            PlQuery.PlCall("inicioCrearGrupos");
+            using (var q1 = new PlQuery("printGrupos(G,Cant)"))
             {
                 foreach (PlQueryVariables x in q1.SolutionVariables)
                 {
                     cantGrupos++;
-                    listBox1.Items.Add("Grupo#" + cantGrupos.ToString() + ": " + x["X"].ToString());
-                    listBox1.Items.Add("Cantidad de puntos:" + x["Y"].ToString());
+                    auxList.Add(x["G"].ToString());
+                    listBox1.Items.Add("Grupo#" + cantGrupos.ToString() + ": " + x["G"].ToString());
+                    listBox1.Items.Add("Cantidad de puntos:" + x["Cant"].ToString());
                 }
             }
             pintarGrupos(auxList);
