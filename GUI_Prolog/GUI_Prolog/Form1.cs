@@ -258,6 +258,7 @@ namespace GUI_Prolog
             int test = 0;
             int cantGrupos = 0;
             PlQuery.PlCall("ejecutar");
+            /*
             using (var q1 = new PlQuery("grupos(X,Y)"))
             {
                 foreach (PlQueryVariables x in q1.SolutionVariables)
@@ -277,6 +278,15 @@ namespace GUI_Prolog
                         listBox1.Items.Add("Cantidad de puntos:" + x["Y"].ToString());
                         listBox1.Items.Add("\n");
                     }
+                }
+            }*/
+            using (var q1 = new PlQuery("grupos(X,Y)"))
+            {
+                foreach (PlQueryVariables x in q1.SolutionVariables)
+                {
+                    cantGrupos++;
+                    listBox1.Items.Add("Grupo#" + cantGrupos.ToString() + ": " + x["X"].ToString());
+                    listBox1.Items.Add("Cantidad de puntos:" + x["Y"].ToString());
                 }
             }
             pintarGrupos(auxList);
