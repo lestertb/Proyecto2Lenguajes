@@ -28,6 +28,7 @@ namespace GUI_Prolog
             linkLabel1.Visible = false;
             linkLabel2.Visible = false;
             listBox1.HorizontalScrollbar = true;
+            button5.Enabled = false;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -153,7 +154,7 @@ namespace GUI_Prolog
             checkBox1.Enabled = false;
             recorrerDataGrid();
             button4.Enabled = false;
-            
+            button5.Enabled = true;
         }
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -293,6 +294,7 @@ namespace GUI_Prolog
         private void button5_Click(object sender, EventArgs e)
         {
             imprimirGrupos();
+            button5.Enabled = false;
         }
 
         void imprimirGrupos()
