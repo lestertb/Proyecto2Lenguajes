@@ -18,6 +18,7 @@ namespace GUI_Prolog
         //Globals
         int tamannoMatriz = 0;
         int cambiosMatriz = 0;
+        List<string> grupos = new List<string>();
 
         public Form1()
         {
@@ -51,6 +52,7 @@ namespace GUI_Prolog
                     "Advertencia" ,MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
             textBox1.Text = string.Empty;
+
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -91,12 +93,14 @@ namespace GUI_Prolog
             }
             if (tipoGenerar == 1)
             {
+                dataGridView1.ClearSelection();
                 cambiosMatriz = 0;
                 MessageBox.Show("Proceda a llenar la matriz" +
                     "\nClick en ver consejo para más información","Matriz generada con éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
+                dataGridView1.ClearSelection();
                 MessageBox.Show("Generando matriz automatica");
                 llenarAutomatico(tamannoMatriz);
                 cambiosMatriz = 1;
@@ -187,6 +191,44 @@ namespace GUI_Prolog
             {
                 MessageBox.Show("De click dentro de la matriz", "Fuera de rango", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
+
+            if (grupos.Count > 0)
+            {
+                if (e.Button == MouseButtons.Left)
+                {
+                    try
+                    {
+                        dataGridView1.ClearSelection();
+                        var hit = dataGridView1.HitTest(e.X, e.Y);
+                        dataGridView1.Rows[hit.RowIndex].Cells[hit.ColumnIndex].Selected = true;
+                        for (int z = 0; z < grupos.Count; z++)
+                        {
+                            if (grupos[z].Contains(hit.RowIndex + "," + hit.ColumnIndex))
+                            {
+                                for (int i = 0; i < tamannoMatriz; i++)
+                                {
+                                    for (int j = 0; j < tamannoMatriz; j++)
+                                    {
+                                        if (grupos[z].Contains(i + "," + j))
+                                            dataGridView1.Rows[i].Cells[j].Selected = true;
+                                        else
+                                            dataGridView1.Rows[i].Cells[j].Selected = false;
+                                    }
+                                }
+                                MessageBox.Show("El punto seleccionado es: " + "[" + hit.RowIndex + "," + hit.ColumnIndex + "]" +
+                                    "\nPertenece al Grupo #" + (z + 1) + "\nEste " +
+                                    "grupo tiene los siguientes miembros: " + grupos[z],
+                                    "Info del punto", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
+                        }
+                    }
+                    catch (ArgumentOutOfRangeException outOfRange)
+                    {
+                        MessageBox.Show("De click dentro de la matriz", "Fuera de rango", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+
+                }
+            }
         }
 
         void recorrerDataGrid() {
@@ -255,7 +297,6 @@ namespace GUI_Prolog
 
         void imprimirGrupos()
         {
-            List<string> auxList = new List<string>();
             int cantGrupos = 0;
             Regex r = new Regex("(.)(?<=\\1\\1\\1)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
             PlQuery.PlCall("startCrearGrupos");
@@ -272,19 +313,23 @@ namespace GUI_Prolog
                     }
                     listBox1.Items.Add("Grupo#" + cantGrupos.ToString() + ": " + z);
                     listBox1.Items.Add("Cantidad de puntos:" + x["Cant"].ToString());
-                    auxList.Add(z);
+                    grupos.Add(z);
                 }
             }
-            pintarGrupos(auxList);
-
         }
 
-        void pintarGrupos(List<string> grupos) {
-            foreach (var x in grupos)
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            for (int i = 0; i < tamannoMatriz; i++)
             {
-                MessageBox.Show(x);
+                for (int j = 0; j < tamannoMatriz; j++)
+                {
+                    if (listBox1.SelectedItem.ToString().Contains(i + "," + j))
+                        dataGridView1.Rows[i].Cells[j].Selected = true;
+                    else
+                        dataGridView1.Rows[i].Cells[j].Selected = false;
+                }
             }
         }
-
     }
 }
