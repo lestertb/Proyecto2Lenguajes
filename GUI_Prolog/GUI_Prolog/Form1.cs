@@ -6,6 +6,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -141,7 +142,7 @@ namespace GUI_Prolog
         private void button4_Click(object sender, EventArgs e)
         {
 
-            PlQuery.PlCall("assert(matrixSize(" + tamannoMatriz + "))");
+            PlQuery.PlCall("assert(tamannoMTX(" + tamannoMatriz + "))");
             textBox1.Enabled = false;
             button2.Enabled = false;
             button3.Enabled = false;
@@ -197,7 +198,7 @@ namespace GUI_Prolog
                     if ((string)dataGridView1.Rows[i].Cells[j].Value == "X")
                     {
                         tiene = true;
-                        string codData = "pares(" + i + "," + j + "," + "0" + ")";
+                        string codData = "pares(" + i + "," + j + "," + "nv" + ")";
                         llenarDataProlog(codData);
                     }
                 }
@@ -256,15 +257,22 @@ namespace GUI_Prolog
         {
             List<string> auxList = new List<string>();
             int cantGrupos = 0;
-            PlQuery.PlCall("inicioCrearGrupos");
+            Regex r = new Regex("(.)(?<=\\1\\1\\1)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+            PlQuery.PlCall("startCrearGrupos");
             using (var q1 = new PlQuery("printGrupos(G,Cant)"))
             {
                 foreach (PlQueryVariables x in q1.SolutionVariables)
                 {
                     cantGrupos++;
-                    auxList.Add(x["G"].ToString());
-                    listBox1.Items.Add("Grupo#" + cantGrupos.ToString() + ": " + x["G"].ToString());
+                    var z = r.Replace(x["G"].ToString(), String.Empty);
+                    z = z.Replace("]]", "]");
+                    if (x["Cant"].ToString() != "1")
+                    {
+                        z += "]";
+                    }
+                    listBox1.Items.Add("Grupo#" + cantGrupos.ToString() + ": " + z);
                     listBox1.Items.Add("Cantidad de puntos:" + x["Cant"].ToString());
+                    auxList.Add(z);
                 }
             }
             pintarGrupos(auxList);

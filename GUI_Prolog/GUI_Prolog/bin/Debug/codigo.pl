@@ -1,176 +1,159 @@
-%Variables para el Data dynamic
+%-----Variables para el Data dynamic
+
+% tamannoMTX estructura: (Val) simplemente guarda el valor del tamaño de
+% la matriz, para luego comprobar que los X y Y no se salen de la matriz
+:- dynamic tamannoMTX/1.
+
+% pares estructura: (1,0,0) los 2 primeros valores son las posiciones
+% X,Y respectuvamente, el 3 valor es para marcar si ha sido visitado o
+% no. "nv" es no visitado y "v" es visitado
 :- dynamic pares/3.
 
+% grupos estructura: ([[X,Y]],cant) los grupos tienen una lista con
+% listas de pares, y el segundo valor lleva la cantidad de pares que se
+% han ido agregando según las validaciónes
+:- dynamic grupos/2.
 
-:- dynamic grupo/2.
 
+%-----Inicio codigo
 
-:- dynamic matrixSize/1.
+%Iniciar en 0,0 para tomar encuenta la primera posibilidad
+startCrearGrupos:- startVerificar(0,0).
 
+% Aumenta valores X,Y que se encuentren dentro del rando de la
+% matrix para inciar con la verificación pares válidos y agregarlos a
+% grupos
+startVerificar(X,Y):- tamannoMTX(AuxTam),X =< AuxTam,Y =< AuxTam,
+		      pares(X,Y,nv),retract(pares(X,Y,_)),assert(pares(X,Y,v)),
+		      searchAbajo(X,Y,[X,Y],abajo1,1),
+		      AuxY is Y+1,
+		      startVerificar(X,AuxY).
 
-% Inicio codigo
+startVerificar(X,Y):- tamannoMTX(AuxTam),X =< AuxTam,Y =< AuxTam,
+		      not(pares(X,Y,nv)),
+		      AuxY is Y+1,
+		      startVerificar(X,AuxY).
+
+startVerificar(X,Y):- tamannoMTX(AuxTam),X =< AuxTam,Y > AuxTam,
+		      AuxX is X+1,AuxY is 0,
+		      startVerificar(AuxX,AuxY).
+
+startVerificar(X,_):- tamannoMTX(AuxTam),X >AuxTam.
 
 %Lleva el contador de miembros en los grupos
-llevarContador(V1,V2):- V2 is V1.
+carryContador(V1,V2):- V2 is V1.
 
 %Concatena la lista de grupos
 concatListas(L1,L2):- append(L1,[],L2).
 
 %-----Inicio comprobar posiciones
 
-% Abajo de la posicion actual por fuera de la matriz
-buscarVertical(X,Y,List,0,Num):- matrixSize(Size),
-	                         X2 is X+1,X2>Size,
-				 buscarHorizontal(X,Y,List,List2,0,Num,Num2),
-				 assert(grupo(List2,Num2)),!.
+% Busqueda abajo en X (+1)
+searchAbajo(X,Y,L,abajo1,Val):- tamannoMTX(AuxTam),AuxX is X+1,AuxX>AuxTam,
+				searchDerecha(X,Y,L,L2,derecha1,Val,Val2),
+				assert(grupos(L2,Val2)).
+
+searchAbajo(X,Y,L,abajo1,Val):- tamannoMTX(AuxTam),AuxX is X+1,AuxX =< AuxTam,
+				pares(AuxX,Y,nv),retract(pares(AuxX,Y,nv)),assert(pares(AuxX,Y,v)),
+				AuxCont is Val+1,
+				searchAbajo2(AuxX,Y,[L|[[AuxX,Y]]],AuxLista,abajo2,AuxCont,AuxVal),
+				concatListas(AuxLista,AuxLista2),carryContador(AuxVal,AuxVal2),
+				searchDerecha(X,Y,AuxLista2,AuxListaResult,derecha1,AuxVal2,AuxValResult),
+				assert(grupos(AuxListaResult,AuxValResult)).
+
+searchAbajo(X,Y,L,abajo1,Val):- tamannoMTX(AuxTam),AuxX is X+1,AuxX =< AuxTam,
+				not(pares(AuxX,Y,nv)),
+				searchDerecha(X,Y,L,AuxListResult,derecha1,Val,AuxValResult),
+				assert(grupos(AuxListResult,AuxValResult)).
+
+%Busqueda derecha en Y (+1)
+
+searchDerecha(_,Y,L,L2,derecha1,Val,Val2):- tamannoMTX(AuxTam),AuxY is Y+1,AuxY>AuxTam,
+					    concatListas(L,L2),carryContador(Val,Val2).
+
+searchDerecha(X,Y,L,L2,derecha1,Val,Val2):- tamannoMTX(AuxTam),AuxY is Y+1,AuxY =< AuxTam,
+					    pares(X,AuxY,nv),retract(pares(X,AuxY,_)),assert(pares(X,AuxY,v)),
+					    AuxCont is Val+1,
+					    searchAbajo2(X,AuxY,[L|[[X,AuxY]]],AuxListResult,abajo2,AuxCont,AuxValResult),
+					    concatListas(AuxListResult,L2),carryContador(AuxValResult,Val2).
+
+searchDerecha(X,Y,L,L2,derecha1,Val,Val2):- tamannoMTX(AuxTam),AuxY is Y+1,AuxY =< AuxTam,
+					    not(pares(X,AuxY,nv)),
+					    concatListas(L,L2),carryContador(Val,Val2).
 
 
-% Abajo de la posicion actual con otra posicion encontrada
-buscarVertical(X,Y,List,0,Num):- matrixSize(Size),X2 is X+1,X2 =< Size,
-				 pares(X2,Y,0),retract(pares(X2,Y,0)),assert(pares(X2,Y,1)),
-				 NumAux is Num+1,
-				 buscarVertical2(X2,Y,[List|[[X2,Y]]],ListaEncontrada,0,NumAux,NumEncontrado),
-				 concatListas(ListaEncontrada,NuevaList),llevarContador(NumEncontrado,NuevoNum),
-				 buscarHorizontal(X,Y,NuevaList,ListEncontrada2,0,NuevoNum,NumEncontrado2),
-				 assert(grupo(ListEncontrada2,NumEncontrado2)),!.
+% Busqueda abajo2 en X (+1) por si encontró un valor en la busqueda
+% anterior
 
-% Abajo de la posicion actual pero sin otra posicion encontrada
-buscarVertical(X,Y,List,0,Num):- matrixSize(Size),X2 is X+1,X2 =< Size,
-				 not(pares(X2,Y,0)),
-				 buscarHorizontal(X,Y,List,ListEncontrada,0,Num,NumEncontrado),
-				 assert(grupo(ListEncontrada,NumEncontrado)),!.
+searchAbajo2(X,Y,L,L2,abajo2,Val,Val2):- tamannoMTX(AuxTam),AuxX is X+1,AuxX>AuxTam,
+					 searchDerecha2(X,Y,L,AuxList,derecha2,Val,AuxVal),
+					 concatListas(AuxList,AuxListResult),carryContador(AuxVal,AuxValResult),
+					 searchIzquierda(X,Y,AuxListResult,L2,izquierda1,AuxValResult,Val2).
 
+searchAbajo2(X,Y,L,L2,abajo2,Val,Val2):- tamannoMTX(AuxTam),AuxX is X+1,AuxX =< AuxTam,
+					 pares(AuxX,Y,nv),retract(pares(AuxX,Y,nv)),assert(pares(AuxX,Y,v)),
+					 AuxCont is Val+1,
+					 searchAbajo2(AuxX,Y,[L|[[AuxX,Y]]],AuxList,abajo2,AuxCont,AuxVal),
+					 concatListas(AuxList,AuxResultLista),carryContador(AuxVal,AuxResultVal),
+					 searchDerecha2(X,Y,AuxResultLista,Aux2Lista,derecha2,AuxResultVal,Aux2Val),
+					 concatListas(Aux2Lista,Aux3Lista),carryContador(Aux2Val,Aux3Val),
+					 searchIzquierda(X,Y,Aux3Lista,L2,izquierda1,Aux3Val,Val2).
 
-%---------------------------------------------------------------------------
-% Checkeo Horizontal de posiciones derecha e izquierda de (X,Y)
-%--------------------------------------------------------------------------
+searchAbajo2(X,Y,L,L2,abajo2,Val,Val2):- tamannoMTX(AuxTam),AuxX is X+1,AuxX =< AuxTam,
+					 not(pares(AuxX,Y,nv)),
+					 searchDerecha2(X,Y,L,AuxList,derecha2,Val,AuxVal),										 concatListas(AuxList,AuxResultLista),
+					 carryContador(AuxVal,AuxResultVal),
+					 searchIzquierda(X,Y,AuxResultLista,L2,izquierda1,AuxResultVal,Val2).
 
-% Izquierda de la posicion actual por fuera de la matriz
-buscarHorizontal(_,Y,List,List2,0,Num,Num2):- matrixSize(Size),Y2 is Y+1,Y2>Size,
-                                              concatListas(List,List2),llevarContador(Num,Num2),!.
+%Busqueda arriba en Y (-1)
+searchArriba(X,_,L,L2,arriba1,Val,Val2):- AuxX is X-1,AuxX < 0,
+					  concatListas(L,L2),
+					  carryContador(Val,Val2).
 
-% Izquierda de la posicion actual con otra posicion encontrada
-buscarHorizontal(X,Y,List,List4,0,Num,Num4):- matrixSize(Size),Y2 is Y+1,Y2 =< Size,
-                                              pares(X,Y2,0),retract(pares(X,Y2,_)),assert(pares(X,Y2,1)),
-                                              Num2 is Num+1,
-                                              buscarVertical2(X,Y2,[List|[[X,Y2]]],ListEncontrada,0,Num2,NumEncontrado),
-                                              concatListas(ListEncontrada,List4),llevarContador(NumEncontrado,Num4),!.
+searchArriba(X,Y,L,L2,arriba1,Val,Val2):- AuxX is X-1,AuxX >= 0,
+					  pares(AuxX,Y,nv),retract(pares(AuxX,Y,nv)),assert(pares(AuxX,Y,v)),
+					  AuxCont is Val+1,
+					  searchAbajo2(AuxX,Y,[L|[[AuxX,Y]]],AuxList,abajo2,AuxCont,AuxVal),
+					  concatListas(AuxList,L2),carryContador(AuxVal,Val2).
 
-% Izquierda de la posicion actual sin otra posicion encontrada
-buscarHorizontal(X,Y,List,List2,0,Num,Num2):- matrixSize(Size),Y2 is Y+1,Y2 =< Size,
-                                              not(pares(X,Y2,0)),
-                                              concatListas(List,List2),
-                                              llevarContador(Num,Num2),!.
+searchArriba(X,Y,L,L2,arriba1,Val,Val2):- AuxX is X-1,AuxX >= 0,
+					  not(pares(AuxX,Y,nv)),
+					  concatListas(L,L2),carryContador(Val,Val2).
 
+% Busqueda Derecha2 en Y (+1) por si encontró un valor en la busqueda
+% anterior
+searchDerecha2(X,Y,L,L2,derecha2,Val,Val2):- tamannoMTX(AuxTam),AuxY is Y+1,AuxY>AuxTam,
+					     searchIzquierda(X,Y,L,L2,izquierda1,Val,Val2).
 
-%---------------------------------------------------------------------------
-% Checkeo Vertical2 de posiciones arriba o abajo de la (X,Y)
-%--------------------------------------------------------------------------
+searchDerecha2(X,Y,L,L2,derecha2,Val,Val2):- tamannoMTX(AuxTam),AuxY is Y+1,AuxY =< AuxTam,
+					     pares(X,AuxY,nv),retract(pares(X,AuxY,_)),assert(pares(X,AuxY,v)),
+					     AuxCont is Val+1,
+					     searchAbajo2(X,AuxY,[L|[[X,AuxY]]],AuxList,abajo2,AuxCont,AuxVal),
+					     concatListas(AuxList,L2),carryContador(AuxVal,Val2).
 
-% Abajo de la posicion actual por fuera de la matriz
-buscarVertical2(X,Y,List,List2,0,Num,Num2):- matrixSize(Size),X2 is X+1,X2>Size,
-                                             buscarHorizontal2(X,Y,List,ListEncontrada,0,Num,NumEncontrado),
-                                             concatListas(ListEncontrada,ListNueva),llevarContador(NumEncontrado,NumNuevo),
-                                             buscarHorizontal2(X,Y,ListNueva,List2,1,NumNuevo,Num2),!.
+searchDerecha2(X,Y,L,L2,derecha2,Val,Val2):- tamannoMTX(AuxTam),AuxY is Y+1,AuxY =< AuxTam,
+					     not(pares(X,AuxY,nv)),
+					     searchIzquierda(X,Y,L,L2,izquierda1,Val,Val2).
 
-% Abajo de la posicion actual con otra posicion encontrada
-buscarVertical2(X,Y,List,List2,0,Num,Num3):- matrixSize(Size),X2 is X+1,X2 =< Size,
-                                             pares(X2,Y,0),retract(pares(X2,Y,0)),assert(pares(X2,Y,1)),
-                                             Num2 is Num+1,
-                                             buscarVertical2(X2,Y,[List|[[X2,Y]]],ListEncontrada,0,Num2,NumEncontrado),
-                                             concatListas(ListEncontrada,ListNueva),llevarContador(NumEncontrado,NumNuevo),
-                                             buscarHorizontal2(X,Y,ListNueva,ListEncontrada2,0,NumNuevo,NumEncontrado2),
-                                             concatListas(ListEncontrada2,ListNueva2),llevarContador(NumEncontrado2,NumNuevo2),
-                                             buscarHorizontal2(X,Y,ListNueva2,List2,1,NumNuevo2,Num3),!.
-
-% Abajo de la posicion actual pero sin otra posicion encontrada
-buscarVertical2(X,Y,List,List2,0,Num,Num3):- matrixSize(Size),X2 is X+1,X2 =< Size,
-                                             not(pares(X2,Y,0)),
-                                             buscarHorizontal2(X,Y,List,ListEncontrada,0,Num,NumEncontrado),                                                                      concatListas(ListEncontrada,ListNueva),
-                                             llevarContador(NumEncontrado,NumNuevo),
-                                             buscarHorizontal2(X,Y,ListNueva,List2,1,NumNuevo,Num3),!.
-
-buscarVertical2(X,_,List,List2,1,Num,Num2):- X2 is X-1,X2 < 0,
-					     concatListas(List,List2),
-                                             llevarContador(Num,Num2),!.
-
-% Abajo de la posicion actual con otra posicion encontrada
-buscarVertical2(X,Y,List,List2,1,Num,Num3):- X2 is X-1,X2 >= 0,
-                                             pares(X2,Y,0),retract(pares(X2,Y,0)),assert(pares(X2,Y,1)),
-                                             Num2 is Num+1,
-                                             buscarVertical2(X2,Y,[List|[[X2,Y]]],ListEncontrada,0,Num2,NumEncontrado),
-                                             concatListas(ListEncontrada,List2),
-                                             llevarContador(NumEncontrado,Num3),!.
-
-% Abajo de la posicion actual pero sin otra posicion encontrada
-buscarVertical2(X,Y,List,List2,1,Num,Num3):- X2 is X-1,X2 >= 0,
-                                             not(pares(X2,Y,0)),
-					     concatListas(List,List2),
-                                             llevarContador(Num,Num3),!.
-
-
-
-%---------------------------------------------------------------------------
-% Checkeo Horizontal2 de posiciones derecha e izquierda de (X,Y)
-%--------------------------------------------------------------------------
-
-% Derecha de la posicion actual por fuera de la matriz
-buscarHorizontal2(X,Y,List,List2,0,Num,Num2):- matrixSize(Size),Y2 is Y+1,Y2>Size,
-                                               buscarHorizontal2(X,Y,List,List2,1,Num,Num2),!.
-
-% Derecha de la posicion actual con otra posicion encontrada
-buscarHorizontal2(X,Y,List,List2,0,Num,Num3):- matrixSize(Size),Y2 is Y+1,Y2 =< Size,
-                                               pares(X,Y2,0),retract(pares(X,Y2,_)),assert(pares(X,Y2,1)),
-                                               Num2 is Num+1,
-                                               buscarVertical2(X,Y2,[List|[[X,Y2]]],ListEncontrada,0,Num2,NumEncontrado),
-                                               concatListas(ListEncontrada,List2),llevarContador(NumEncontrado,Num3),!.
-
-% Derecha de la posicion actual sin otra posicion encontrada
-buscarHorizontal2(X,Y,List,List2,0,Num,Num2):- matrixSize(Size),Y2 is Y+1,Y2 =< Size,
-                                               not(pares(X,Y2,0)),
-					       buscarHorizontal2(X,Y,List,List2,1,Num,Num2),!.
-
-% !
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% Izquierda de la posicion actual por fuera de la matriz
-buscarHorizontal2(X,Y,List,List2,1,Num,Num2):- Y2 is Y-1,Y2<0,
-					       buscarVertical2(X,Y,List,List2,1,Num,Num2),!.
+%Busqueda Izquierda en Y (-1)
+searchIzquierda(X,Y,L,L2,izquierda1,Val,Val2):- AuxY is Y-1,AuxY<0,
+					        searchArriba(X,Y,L,L2,arriba1,Val,Val2).
 
 % Izquierda de la posicion actual con otra posicion encontrada
-buscarHorizontal2(X,Y,List,List2,1,Num,Num3):-Y2 is Y-1,Y2 >= 0,
-                                              pares(X,Y2,0),retract(pares(X,Y2,_)),assert(pares(X,Y2,1)),
-                                              Num2 is Num+1,
-                                              buscarVertical2(X,Y2,[List|[[X,Y2]]],ListEncontrada,0,Num2,NumEncontrado),
-                                              concatListas(ListEncontrada,List2),llevarContador(NumEncontrado,Num3),!.
+searchIzquierda(X,Y,L,L2,izquierda1,Val,Val2):- AuxY is Y-1,AuxY >= 0,
+                                                pares(X,AuxY,nv),retract(pares(X,AuxY,_)),assert(pares(X,AuxY,v)),
+                                                AuxCont is Val+1,
+                                                searchAbajo2(X,AuxY,[L|[[X,AuxY]]],AuxList,abajo2,AuxCont,AuxVal),
+                                                concatListas(AuxList,L2),carryContador(AuxVal,Val2).
 
 % Izquierda de la posicion actual sin otra posicion encontrada
-buscarHorizontal2(X,Y,List,List2,1,Num,Num2):- Y2 is Y-1,Y2 >= 0,
-                                               not(pares(X,Y2,0)),
-                                               buscarVertical2(X,Y,List,List2,1,Num,Num2),!.
+searchIzquierda(X,Y,L,L2,izquierda1,Val,Val2):- AuxY is Y-1,AuxY >= 0,
+                                                not(pares(X,AuxY,nv)),
+                                                searchArriba(X,Y,L,L2,arriba1,Val,Val2).
 
-printGrupos(G,Cant):- grupo(G,Cant).
+%Imprimir las listas de los grupos con su cantidad
+printGrupos(G,Cant):- grupos(G,Cant).
 
-%Iniciar en 0,0 para tomar encuenta la primera posibilidad
-inicioCrearGrupos:- inicioVerificar(0,0),!.
-
-%Verificar pares válidos
-inicioVerificar(X,Y):- matrixSize(Size),X =< Size,Y =< Size,
-               pares(X,Y,0),retract(pares(X,Y,_)),assert(pares(X,Y,1)),
-               buscarVertical(X,Y,[X,Y],0,1),
-               AuxY is Y+1,
-               inicioVerificar(X,AuxY).
-
-inicioVerificar(X,Y):- matrixSize(Size),X =< Size,Y =< Size,
-               not(pares(X,Y,0)),
-               AuxY is Y+1,
-               inicioVerificar(X,AuxY).
-
-inicioVerificar(X,Y):- matrixSize(Size),X =< Size,Y > Size,
-               AuxX is X+1,AuxY is 0,
-               inicioVerificar(AuxX,AuxY).
-
-inicioVerificar(X,_):- matrixSize(Size),X >Size,!.
 
 
 
