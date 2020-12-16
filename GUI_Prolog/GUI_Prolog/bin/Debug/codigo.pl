@@ -4,7 +4,7 @@
 % la matriz, para luego comprobar que los X y Y no se salen de la matriz
 :- dynamic tamannoMTX/1.
 
-% pares estructura: (1,0,0) los 2 primeros valores son las posiciones
+% pares estructura: (1,0,v) los 2 primeros valores son las posiciones
 % X,Y respectuvamente, el 3 valor es para marcar si ha sido visitado o
 % no. "nv" es no visitado y "v" es visitado
 :- dynamic pares/3.
@@ -16,6 +16,15 @@
 
 
 %-----Inicio codigo
+%
+%
+
+%Eliminar par que ya se tomó en cuenta
+deletePar1(X,Y,_):- retract(pares(X,Y,_)).
+
+%Eliminar par no visitado
+deletePar2(X,Y,nv):- retract(pares(X,Y,nv)).
+
 
 %Iniciar en 0,0 para tomar encuenta la primera posibilidad
 startCrearGrupos:- startVerificar(0,0).
@@ -24,7 +33,7 @@ startCrearGrupos:- startVerificar(0,0).
 % matrix para inciar con la verificación pares válidos y agregarlos a
 % grupos
 startVerificar(X,Y):- tamannoMTX(AuxTam),X =< AuxTam,Y =< AuxTam,
-		      pares(X,Y,nv),retract(pares(X,Y,_)),assert(pares(X,Y,v)),
+		      pares(X,Y,nv),deletePar1(X,Y,_),assert(pares(X,Y,v)),
 		      searchAbajo(X,Y,[X,Y],abajo1,1),
 		      AuxY is Y+1,
 		      startVerificar(X,AuxY).
@@ -54,7 +63,7 @@ searchAbajo(X,Y,L,abajo1,Val):- tamannoMTX(AuxTam),AuxX is X+1,AuxX>AuxTam,
 				assert(grupos(L2,Val2)).
 
 searchAbajo(X,Y,L,abajo1,Val):- tamannoMTX(AuxTam),AuxX is X+1,AuxX =< AuxTam,
-				pares(AuxX,Y,nv),retract(pares(AuxX,Y,nv)),assert(pares(AuxX,Y,v)),
+				pares(AuxX,Y,nv),deletePar2(AuxX,Y,nv),assert(pares(AuxX,Y,v)),
 				AuxCont is Val+1,
 				searchAbajo2(AuxX,Y,[L|[[AuxX,Y]]],AuxLista,abajo2,AuxCont,AuxVal),
 				concatListas(AuxLista,AuxLista2),carryContador(AuxVal,AuxVal2),
@@ -72,7 +81,7 @@ searchDerecha(_,Y,L,L2,derecha1,Val,Val2):- tamannoMTX(AuxTam),AuxY is Y+1,AuxY>
 					    concatListas(L,L2),carryContador(Val,Val2).
 
 searchDerecha(X,Y,L,L2,derecha1,Val,Val2):- tamannoMTX(AuxTam),AuxY is Y+1,AuxY =< AuxTam,
-					    pares(X,AuxY,nv),retract(pares(X,AuxY,_)),assert(pares(X,AuxY,v)),
+					    pares(X,AuxY,nv),deletePar1(X,AuxY,_),assert(pares(X,AuxY,v)),
 					    AuxCont is Val+1,
 					    searchAbajo2(X,AuxY,[L|[[X,AuxY]]],AuxListResult,abajo2,AuxCont,AuxValResult),
 					    concatListas(AuxListResult,L2),carryContador(AuxValResult,Val2).
@@ -91,7 +100,7 @@ searchAbajo2(X,Y,L,L2,abajo2,Val,Val2):- tamannoMTX(AuxTam),AuxX is X+1,AuxX>Aux
 					 searchIzquierda(X,Y,AuxListResult,L2,izquierda1,AuxValResult,Val2).
 
 searchAbajo2(X,Y,L,L2,abajo2,Val,Val2):- tamannoMTX(AuxTam),AuxX is X+1,AuxX =< AuxTam,
-					 pares(AuxX,Y,nv),retract(pares(AuxX,Y,nv)),assert(pares(AuxX,Y,v)),
+					 pares(AuxX,Y,nv),deletePar2(AuxX,Y,nv),assert(pares(AuxX,Y,v)),
 					 AuxCont is Val+1,
 					 searchAbajo2(AuxX,Y,[L|[[AuxX,Y]]],AuxList,abajo2,AuxCont,AuxVal),
 					 concatListas(AuxList,AuxResultLista),carryContador(AuxVal,AuxResultVal),
@@ -111,7 +120,7 @@ searchArriba(X,_,L,L2,arriba1,Val,Val2):- AuxX is X-1,AuxX < 0,
 					  carryContador(Val,Val2).
 
 searchArriba(X,Y,L,L2,arriba1,Val,Val2):- AuxX is X-1,AuxX >= 0,
-					  pares(AuxX,Y,nv),retract(pares(AuxX,Y,nv)),assert(pares(AuxX,Y,v)),
+					  pares(AuxX,Y,nv),deletePar2(AuxX,Y,nv),assert(pares(AuxX,Y,v)),
 					  AuxCont is Val+1,
 					  searchAbajo2(AuxX,Y,[L|[[AuxX,Y]]],AuxList,abajo2,AuxCont,AuxVal),
 					  concatListas(AuxList,L2),carryContador(AuxVal,Val2).
@@ -126,7 +135,7 @@ searchDerecha2(X,Y,L,L2,derecha2,Val,Val2):- tamannoMTX(AuxTam),AuxY is Y+1,AuxY
 					     searchIzquierda(X,Y,L,L2,izquierda1,Val,Val2).
 
 searchDerecha2(X,Y,L,L2,derecha2,Val,Val2):- tamannoMTX(AuxTam),AuxY is Y+1,AuxY =< AuxTam,
-					     pares(X,AuxY,nv),retract(pares(X,AuxY,_)),assert(pares(X,AuxY,v)),
+					     pares(X,AuxY,nv),deletePar1(X,AuxY,_),assert(pares(X,AuxY,v)),
 					     AuxCont is Val+1,
 					     searchAbajo2(X,AuxY,[L|[[X,AuxY]]],AuxList,abajo2,AuxCont,AuxVal),
 					     concatListas(AuxList,L2),carryContador(AuxVal,Val2).
@@ -141,7 +150,7 @@ searchIzquierda(X,Y,L,L2,izquierda1,Val,Val2):- AuxY is Y-1,AuxY<0,
 
 % Izquierda de la posicion actual con otra posicion encontrada
 searchIzquierda(X,Y,L,L2,izquierda1,Val,Val2):- AuxY is Y-1,AuxY >= 0,
-                                                pares(X,AuxY,nv),retract(pares(X,AuxY,_)),assert(pares(X,AuxY,v)),
+                                                pares(X,AuxY,nv),deletePar1(X,AuxY,_),assert(pares(X,AuxY,v)),
                                                 AuxCont is Val+1,
                                                 searchAbajo2(X,AuxY,[L|[[X,AuxY]]],AuxList,abajo2,AuxCont,AuxVal),
                                                 concatListas(AuxList,L2),carryContador(AuxVal,Val2).
@@ -153,6 +162,7 @@ searchIzquierda(X,Y,L,L2,izquierda1,Val,Val2):- AuxY is Y-1,AuxY >= 0,
 
 %Imprimir las listas de los grupos con su cantidad
 printGrupos(G,Cant):- grupos(G,Cant).
+
 
 
 

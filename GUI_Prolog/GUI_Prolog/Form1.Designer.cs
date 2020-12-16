@@ -224,6 +224,7 @@ namespace GUI_Prolog
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.button2);
             this.Name = "Form1";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();

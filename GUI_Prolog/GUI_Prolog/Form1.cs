@@ -266,10 +266,19 @@ namespace GUI_Prolog
 
         private void button1_Click(object sender, EventArgs e)
         {
+            grupos.Clear();
             PlEngine.PlCleanup();
             Environment.SetEnvironmentVariable("Path", @"C:\\Program Files (x86)\\swipl\\bin");
             string[] p = { "-q", "-f", @"codigo.pl" };
-            PlEngine.Initialize(p);
+            try
+            {
+                PlEngine.Initialize(p);
+            }
+            catch
+            {
+                Application.Restart();
+                Environment.Exit(0);
+            }
             dataGridView1.Rows.Clear();
             dataGridView1.Columns.Clear();
             checkBox1.Checked = false;
@@ -281,7 +290,7 @@ namespace GUI_Prolog
             textBox1.Enabled = true;
             button2.Enabled = true;
             button3.Enabled = true;
-            checkBox1.Enabled = true;
+            checkBox1.Enabled = true;       
         }
 
         private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -317,6 +326,7 @@ namespace GUI_Prolog
                     listBox1.Items.Add("Cantidad de puntos:" + x["Cant"].ToString());
                     grupos.Add(z);
                 }
+                q1.Dispose();
             }
         }
 
